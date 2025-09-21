@@ -2,29 +2,29 @@
 
 namespace Mbsoft\OpenAlex\DTOs;
 
-use Illuminate\Support\Collection;
 use Spatie\LaravelData\Attributes\MapInputName;
 use Spatie\LaravelData\Data;
+use Spatie\LaravelData\Optional;
 
 class Work extends Data
 {
     public function __construct(
         public string $id,
         #[MapInputName('ids.doi')]
-        public ?string        $doi,
-        public string         $display_name,
-        public int            $publication_year,
-        public string         $type,
-        public int            $cited_by_count,
+        public ?string   $doi,
+        public string    $display_name,
+        public int       $publication_year,
+        public string    $type,
+        public int       $cited_by_count,
         /** @var \Mbsoft\OpenAlex\DTOs\Authorship[]|Optional */
         public array|Optional $authorships,
-        public ?Location      $primary_location,
+        public ?Location $primary_location,
         /** @var \Mbsoft\OpenAlex\DTOs\Topic[]|Optional */
         public array|Optional $topics,
         /** @var string[]|Optional */
         public array|Optional $referenced_works,
         #[MapInputName('abstract_inverted_index')]
-        public ?array         $abstract,
+        public ?array    $abstract,
     )
     {
     }
@@ -56,10 +56,9 @@ class Work extends Data
     {
         $authorships = ($this->authorships instanceof Optional) ? [] : $this->authorships;
 
-        // FINAL FIX 1: Use an empty string for the author list if empty.
         $authorList = empty($authorships)
             ? ''
-            : implode(' and ', array_map(fn($authorship) => $authorship->author->display_name, $authorships));
+            : implode(' and ', array_map(fn($authorship) => $authorship?->author?->display_name ?? "unknown author", $authorships));
 
         $lastName = 'Unknown';
         if (!empty($authorships)) {
@@ -68,8 +67,9 @@ class Work extends Data
         }
         $citationKey = $lastName . $this->publication_year;
 
-        $journal = $this->primary_location?->source->display_name ?? 'Unknown Journal';
+        $journal = $this->primary_location?->source?->display_name ?? 'Unknown Journal';
 
+        // FINAL FIX: Strip the URL prefix from the DOI.
         $doi = str_replace('https://doi.org/', '', $this->doi ?? '');
 
         return <<<BIBTEX

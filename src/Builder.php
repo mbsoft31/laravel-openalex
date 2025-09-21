@@ -29,10 +29,6 @@ class Builder
     private DateInterval|Carbon|int|null $cacheTtl = null;
     private bool $cacheForever = false;
 
-    private CarbonInterface|Carbon|DateInterval|null $cacheTtl;
-
-    private bool $cacheForever;
-
     public function __construct(private string $entity) {}
 
     public function where(string $key, string $value): self
