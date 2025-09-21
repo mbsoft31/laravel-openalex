@@ -159,4 +159,3 @@ test('it retries failed requests', function () {
     expect($works)->toHaveCount(1);
     Http::assertSentCount(2); // Should have sent two requests
 });
-

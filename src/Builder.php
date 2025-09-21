@@ -3,7 +3,6 @@
 namespace Mbsoft\OpenAlex;
 
 use BadMethodCallException;
-use Carbon\CarbonInterface;
 use DateInterval;
 use Illuminate\Cache\Repository;
 use Illuminate\Http\Client\ConnectionException;
@@ -26,7 +25,9 @@ class Builder
     private ?string $searchQuery = null;
 
     private array $select = [];
+
     private DateInterval|Carbon|int|null $cacheTtl = null;
+
     private bool $cacheForever = false;
 
     public function __construct(private string $entity) {}

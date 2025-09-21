@@ -2,7 +2,6 @@
 
 namespace Mbsoft\OpenAlex\DTOs;
 
-use Spatie\LaravelData\Attributes\MapInputName;
 use Spatie\LaravelData\Data;
 
 class Source extends Data

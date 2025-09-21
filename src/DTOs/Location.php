@@ -14,6 +14,5 @@ class Location extends Data
         public ?string $version,
         // The Source object is nested inside the Location object
         public ?Source $source,
-    ) {
-    }
+    ) {}
 }

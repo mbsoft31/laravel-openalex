@@ -55,4 +55,3 @@ test('bibtex handles works with no authors', function () {
         ->toContain('@article{Unknown2023,')
         ->toContain('author  = ""');
 });
-

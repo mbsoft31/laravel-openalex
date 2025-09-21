@@ -11,11 +11,11 @@ class Work extends Data
     public function __construct(
         public string $id,
         #[MapInputName('ids.doi')]
-        public ?string   $doi,
-        public string    $display_name,
-        public int       $publication_year,
-        public string    $type,
-        public int       $cited_by_count,
+        public ?string $doi,
+        public string $display_name,
+        public int $publication_year,
+        public string $type,
+        public int $cited_by_count,
         /** @var \Mbsoft\OpenAlex\DTOs\Authorship[]|Optional */
         public array|Optional $authorships,
         public ?Location $primary_location,
@@ -24,10 +24,8 @@ class Work extends Data
         /** @var string[]|Optional */
         public array|Optional $referenced_works,
         #[MapInputName('abstract_inverted_index')]
-        public ?array    $abstract,
-    )
-    {
-    }
+        public ?array $abstract,
+    ) {}
 
     /**
      * Reconstructs the abstract from the inverted index.
@@ -58,14 +56,14 @@ class Work extends Data
 
         $authorList = empty($authorships)
             ? ''
-            : implode(' and ', array_map(fn($authorship) => $authorship?->author?->display_name ?? "unknown author", $authorships));
+            : implode(' and ', array_map(fn ($authorship) => $authorship?->author?->display_name ?? 'unknown author', $authorships));
 
         $lastName = 'Unknown';
-        if (!empty($authorships)) {
+        if (! empty($authorships)) {
             $firstAuthorParts = explode(' ', $authorships[0]->author->display_name);
             $lastName = end($firstAuthorParts);
         }
-        $citationKey = $lastName . $this->publication_year;
+        $citationKey = $lastName.$this->publication_year;
 
         $journal = $this->primary_location?->source?->display_name ?? 'Unknown Journal';
 
