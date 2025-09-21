@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton\Commands;
+namespace Mbsoft\OpenAlex\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class OpenAlexCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'laravel-openalex';
 
     public $description = 'My command';
 
