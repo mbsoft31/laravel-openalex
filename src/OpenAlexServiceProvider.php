@@ -24,10 +24,10 @@ class OpenAlexServiceProvider extends PackageServiceProvider
 
     public function register(): void
     {
-        $this->mergeConfigFrom(__DIR__ . '/../config/openalex.php', 'openalex');
+        $this->mergeConfigFrom(__DIR__.'/../config/openalex.php', 'openalex');
 
         $this->app->bind('openalex', function () {
-            return new OpenAlex();
+            return new OpenAlex;
         });
     }
 
@@ -35,7 +35,7 @@ class OpenAlexServiceProvider extends PackageServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__ . '/../config/openalex.php' => config_path('openalex.php'),
+                __DIR__.'/../config/openalex.php' => config_path('openalex.php'),
             ], 'config');
         }
     }

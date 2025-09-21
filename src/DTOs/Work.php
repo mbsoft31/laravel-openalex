@@ -25,8 +25,7 @@ class Work extends Data
         #[MapInputname('abstract_inverted_index')]
         public ?array $abstract,
         public array $referenced_works,
-    ) {
-    }
+    ) {}
 
     /**
      * NEW: Reconstructs the plain text abstract from the inverted index.
@@ -59,7 +58,7 @@ class Work extends Data
     public function toBibTeX(): string
     {
         $authorList = $this->authors
-            ->map(fn(Authorship $a) => $a->author->display_name)
+            ->map(fn (Authorship $a) => $a->author->display_name)
             ->join(' and ');
 
         $citationKey = sprintf(

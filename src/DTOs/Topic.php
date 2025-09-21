@@ -12,6 +12,5 @@ class Topic extends Data
         public Domain $domain,
         public Field $field,
         public ?Subfield $subfield,
-    ) {
-    }
+    ) {}
 }

@@ -2,7 +2,8 @@
 
 namespace Mbsoft\OpenAlex;
 
-class OpenAlex {
+class OpenAlex
+{
     public function works(): Builder
     {
         return new Builder('works');
