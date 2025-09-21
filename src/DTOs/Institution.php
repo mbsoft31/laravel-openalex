@@ -16,6 +16,5 @@ class Institution extends Data
         public string $type,
         public int $works_count,
         public int $cited_by_count,
-    ) {
-    }
+    ) {}
 }

@@ -20,15 +20,20 @@ use Mbsoft\OpenAlex\Exceptions\OpenAlexException;
 class Builder
 {
     private array $filters = [];
+
     private array $sortBy = [];
+
     private ?string $searchQuery = null;
+
     private array $select = [];
     private DateInterval|Carbon|int|null $cacheTtl = null;
     private bool $cacheForever = false;
 
-    public function __construct(private string $entity)
-    {
-    }
+    private CarbonInterface|Carbon|DateInterval|null $cacheTtl;
+
+    private bool $cacheForever;
+
+    public function __construct(private string $entity) {}
 
     public function where(string $key, string $value): self
     {
@@ -74,7 +79,7 @@ class Builder
     {
         $url = config('openalex.base_url')."/{$this->entity}/{$openAlexId}";
 
-        $callback = fn() => $this->makeRequest($url);
+        $callback = fn () => $this->makeRequest($url);
 
         $response = $this->executeCacheable($url, $callback);
 
@@ -91,7 +96,7 @@ class Builder
     public function get(): Collection
     {
         $url = $this->buildUrl();
-        $callback = fn() => $this->makeRequest($url, $this->buildQueryPayload());
+        $callback = fn () => $this->makeRequest($url, $this->buildQueryPayload());
         $response = $this->executeCacheable($url, $callback);
 
         return collect($response['results'] ?? [])
@@ -114,7 +119,7 @@ class Builder
         /**
          * @throws OpenAlexException
          */
-        $callback = fn() => $this->makeRequest($url);
+        $callback = fn () => $this->makeRequest($url);
 
         $response = $this->executeCacheable($url, $callback);
 
@@ -172,7 +177,7 @@ class Builder
         /**
          * @throws OpenAlexException
          */
-        $callback = fn() => $this->makeRequest($url, $payload);
+        $callback = fn () => $this->makeRequest($url, $payload);
         $response = $this->executeCacheable($url, $callback);
 
         $items = collect($response['results'] ?? [])
@@ -209,16 +214,20 @@ class Builder
     }
 
     // ... (buildQueryPayload, httpClient, mapToDto methods are updated slightly) ...
-    public function __call(string $name, array $arguments): self {
+    public function __call(string $name, array $arguments): self
+    {
         if (str_starts_with($name, 'where')) {
             $filterKey = Str::snake(substr($name, 5));
-            $value = $arguments[0]; return $this->where($filterKey, $value);
+            $value = $arguments[0];
+
+            return $this->where($filterKey, $value);
         }
 
         throw new BadMethodCallException("Method {$name} does not exist.");
     }
 
-    protected function buildQueryPayload(): array {
+    protected function buildQueryPayload(): array
+    {
         $queryParams = [];
 
         if (! empty($this->filters)) {
@@ -246,7 +255,8 @@ class Builder
         return $queryParams;
     }
 
-    protected function mapToDto(array $item): object {
+    protected function mapToDto(array $item): object
+    {
         $dtoClass = 'Mbsoft\\OpenAlex\\DTOs\\'.Str::studly(Str::singular($this->entity));
 
         if (class_exists($dtoClass)) {
@@ -265,6 +275,7 @@ class Builder
     private function buildUrl(array $payload = []): string
     {
         $payload = empty($payload) ? $this->buildQueryPayload() : $payload;
+
         return config('openalex.base_url')."/{$this->entity}?".http_build_query($payload);
     }
 
@@ -308,7 +319,8 @@ class Builder
         return $cache->remember($cacheKey, $this->cacheTtl, $callback);
     }
 
-    protected function httpClient(): PendingRequest {
+    protected function httpClient(): PendingRequest
+    {
         $client = Http::acceptJson();
 
         if ($email = config('openalex.email')) {

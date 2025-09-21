@@ -2,14 +2,14 @@
 
 namespace Mbsoft\OpenAlex\DTOs;
 
+use Illuminate\Support\Collection;
 use Spatie\LaravelData\Attributes\MapInputName;
 use Spatie\LaravelData\Data;
-use Spatie\LaravelData\Optional;
 
 class Work extends Data
 {
     public function __construct(
-        public string         $id,
+        public string $id,
         #[MapInputName('ids.doi')]
         public ?string        $doi,
         public string         $display_name,

@@ -11,6 +11,5 @@ class Authorship extends Data
         public Author $author,
         /** @var DataCollection<Institution> */
         public DataCollection $institutions,
-    ) {
-    }
+    ) {}
 }

@@ -16,6 +16,5 @@ class Source extends Data
         public ?string $homepage_url,
         public ?int $works_count,
         public ?int $cited_by_count,
-    ) {
-    }
+    ) {}
 }

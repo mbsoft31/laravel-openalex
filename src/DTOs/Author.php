@@ -19,6 +19,5 @@ class Author extends Data
         #[MapInputName('summary_stats.h_index')]
         public ?int $h_index,
         public ?Institution $last_known_institution,
-    ) {
-    }
+    ) {}
 }
