@@ -2,9 +2,9 @@
 
 namespace Mbsoft\OpenAlex;
 
+use Mbsoft\OpenAlex\Commands\OpenAlexCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Mbsoft\OpenAlex\Commands\OpenAlexCommand;
 
 class OpenAlexServiceProvider extends PackageServiceProvider
 {
