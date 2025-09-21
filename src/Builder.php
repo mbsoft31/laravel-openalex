@@ -23,11 +23,8 @@ class Builder
     private array $sortBy = [];
     private ?string $searchQuery = null;
     private array $select = [];
-    private CarbonInterface|Carbon|DateInterval|null $cacheTtl;
-    /**
-     * @var true
-     */
-    private bool $cacheForever;
+    private DateInterval|Carbon|int|null $cacheTtl = null;
+    private bool $cacheForever = false;
 
     public function __construct(private string $entity)
     {

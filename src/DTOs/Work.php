@@ -2,34 +2,35 @@
 
 namespace Mbsoft\OpenAlex\DTOs;
 
-use Illuminate\Support\Collection;
 use Spatie\LaravelData\Attributes\MapInputName;
 use Spatie\LaravelData\Data;
+use Spatie\LaravelData\Optional;
 
 class Work extends Data
 {
     public function __construct(
-        public string $id,
+        public string         $id,
         #[MapInputName('ids.doi')]
-        public ?string $doi,
-        public string $display_name,
-        public int $publication_year,
-        public string $type,
-        public int $cited_by_count,
-        #[MapInputName('authorships')]
-        /** @var Collection<Authorship> */
-        public Collection $authors,
-        public ?Source $primary_location,
-        /** @var Collection<Topic> */
-        public Collection $topics,
-        #[MapInputname('abstract_inverted_index')]
-        public ?array $abstract,
-        public array $referenced_works,
-    ) {
+        public ?string        $doi,
+        public string         $display_name,
+        public int            $publication_year,
+        public string         $type,
+        public int            $cited_by_count,
+        /** @var \Mbsoft\OpenAlex\DTOs\Authorship[]|Optional */
+        public array|Optional $authorships,
+        public ?Location      $primary_location,
+        /** @var \Mbsoft\OpenAlex\DTOs\Topic[]|Optional */
+        public array|Optional $topics,
+        /** @var string[]|Optional */
+        public array|Optional $referenced_works,
+        #[MapInputName('abstract_inverted_index')]
+        public ?array         $abstract,
+    )
+    {
     }
 
     /**
-     * NEW: Reconstructs the plain text abstract from the inverted index.
+     * Reconstructs the abstract from the inverted index.
      */
     public function getAbstract(): ?string
     {
@@ -37,44 +38,47 @@ class Work extends Data
             return null;
         }
 
-        $abstractLength = 0;
+        $wordPositions = [];
         foreach ($this->abstract as $word => $positions) {
-            $abstractLength = max($abstractLength, ...$positions);
-        }
-        $abstractLength++;
-
-        $result = array_fill(0, $abstractLength, '');
-        foreach ($this->abstract as $word => $positions) {
-            foreach ($positions as $pos) {
-                $result[$pos] = $word;
+            foreach ($positions as $position) {
+                $wordPositions[$position] = $word;
             }
         }
+        ksort($wordPositions);
 
-        return implode(' ', $result);
+        return implode(' ', $wordPositions);
     }
 
     /**
-     * NEW: Generates a BibTeX citation entry for the work.
+     * Generates a BibTeX citation string.
      */
     public function toBibTeX(): string
     {
-        $authorList = $this->authors
-            ->map(fn(Authorship $a) => $a->author->display_name)
-            ->join(' and ');
+        $authorships = ($this->authorships instanceof Optional) ? [] : $this->authorships;
 
-        $citationKey = sprintf(
-            '%s%s',
-            $this->authors->first()?->author->display_name ?? 'Unknown',
-            $this->publication_year
-        );
+        // FINAL FIX 1: Use an empty string for the author list if empty.
+        $authorList = empty($authorships)
+            ? ''
+            : implode(' and ', array_map(fn($authorship) => $authorship->author->display_name, $authorships));
+
+        $lastName = 'Unknown';
+        if (!empty($authorships)) {
+            $firstAuthorParts = explode(' ', $authorships[0]->author->display_name);
+            $lastName = end($firstAuthorParts);
+        }
+        $citationKey = $lastName . $this->publication_year;
+
+        $journal = $this->primary_location?->source->display_name ?? 'Unknown Journal';
+
+        $doi = str_replace('https://doi.org/', '', $this->doi ?? '');
 
         return <<<BIBTEX
 @article{{$citationKey},
-    author  = "{{$authorList}}",
-    title   = "{{$this->display_name}}",
-    journal = "{{$this->primary_location?->display_name}}",
-    year    = "{{$this->publication_year}}",
-    doi     = "{{$this->doi}}"
+    author  = "{$authorList}",
+    title   = "{$this->display_name}",
+    journal = "{$journal}",
+    year    = "{$this->publication_year}",
+    doi     = "{$doi}"
 }
 BIBTEX;
     }
