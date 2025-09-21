@@ -19,7 +19,24 @@ class OpenAlexServiceProvider extends PackageServiceProvider
             ->name('laravel-openalex')
             ->hasConfigFile()
             ->hasViews()
-            ->hasMigration('create_laravel_openalex_table')
             ->hasCommand(OpenAlexCommand::class);
+    }
+
+    public function register(): void
+    {
+        $this->mergeConfigFrom(__DIR__ . '/../config/openalex.php', 'openalex');
+
+        $this->app->bind('openalex', function () {
+            return new OpenAlex();
+        });
+    }
+
+    public function boot(): void
+    {
+        if ($this->app->runningInConsole()) {
+            $this->publishes([
+                __DIR__ . '/../config/openalex.php' => config_path('openalex.php'),
+            ], 'config');
+        }
     }
 }
